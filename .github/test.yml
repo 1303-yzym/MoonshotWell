@@ -1,0 +1,31 @@
+# 工作流名称
+name: Test
+
+# 触发条件，push以及pr开启时，限定main分支
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types: [ opened ]
+
+# 任务
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: golang:1.25.0
+    steps:
+      # 拉取代码
+      - name: Checkout
+        # 使用其他的actions
+        uses: actions/checkout@v6
+      # 下载依赖
+      - name: Install Dependency
+        # 运行命令
+        # run: go mod download 若无任何依赖需要下载会返回错误，影响github actions的执行
+        run: go mod tidy
+      - name: test
+        # 从根目录起递归测试所有的test
+        run: go test ./...
