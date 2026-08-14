@@ -1,0 +1,16 @@
+env:
+  "dev"
+
+server:
+  http:
+    port:
+      8080
+    router_prefix:
+      "/"
+
+storage:
+  db:
+    mysql:
+      port:
+        3306
+
