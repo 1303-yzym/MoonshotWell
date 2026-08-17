@@ -132,16 +132,28 @@ func (cm *Manager[E]) get() *Config[E] {
 
 // Validation 配置文件验证
 func (c BasicConfig) Validation() error {
-	// TODO 配置文件验证，关键配置是否存在
+	// 验证环境是否正确
+	switch c.Env {
+	case EnvDev, EnvProd, EnvTest:
+	default:
+		return fmt.Errorf("invalid env: %s", c.Env)
+	}
+
+	// TODO 验证其他配置
+
 	return nil
 }
 
 // IsDev 是否是开发环境
 func (c BasicConfig) IsDev() bool {
-	return c.Env == "dev"
+	return c.Env == EnvDev
 }
 
 // IsProd 是否是开发环境
 func (c BasicConfig) IsProd() bool {
-	return c.Env == "prod"
+	return c.Env == EnvProd
+}
+
+func (c BasicConfig) IsTest() bool {
+	return c.Env == EnvTest
 }

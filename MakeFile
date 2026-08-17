@@ -5,10 +5,14 @@ tidy:
 # 构建
 .PHONY: build
 build:
-	GOOS=linux GOARCH=amd64 go build -o ./build/myapp
+	GOOS=linux GOARCH=amd64 go build -o ./build/MW
 
 tag:
 	git tag -a v1.0.0 -m "第一次正式发版"
+
+# make release VERSION=0.2.0
+release:
+	git tag -s -m $(VERSION) $(VERSION)
 
 deleteTag:
 	git tag -d v1.0.0 && \

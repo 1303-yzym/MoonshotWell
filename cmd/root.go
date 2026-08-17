@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/1303-yzym/MoonshotWell/internal/infrastructure/config"
+	"github.com/1303-yzym/MoonshotWell/internal/infrastructure/state"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -16,17 +17,24 @@ var (
 	logDirPath  string
 	env         string
 	ShouldRun   bool
-	Cfg         *config.Config
+	appState    *state.AppState
 
 	rootCmd = &cobra.Command{
 		Use:   SERVERNAME,
 		Short: DESCRIPTION,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			//// 初始化日志管理器
+			//log := logger.Logger.Load()
+			// 初始化配置
 			if err := config.InitConfig(cfgFilePath); err != nil {
 				log.Fatalf("Failed to initialize configuration: %v", err)
 			}
 
-			Cfg = config.Load()
+			// TODO 初始化logger
+
+			// 初始化全局句柄
+			appState = state.InitAppState()
+			// 允许启动
 			ShouldRun = true
 		},
 	}
@@ -40,6 +48,7 @@ func Execute() {
 }
 
 func init() {
+	cobra.EnableTraverseRunHooks = true
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	rootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
 	rootCmd.SetVersionTemplate(fmt.Sprintf("version: %s revision: %s", VERSION, REVISION))

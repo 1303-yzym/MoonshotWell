@@ -1,7 +1,9 @@
 package config
 
-import "github.com/1303-yzym/MoonshotWell/pkg/infra"
+import (
+	"github.com/1303-yzym/MoonshotWell/pkg/infra/DB"
+)
 
 type StorageConfig struct {
-	DB infra.DBConfig `json:"db" comment:"数据库配置"`
+	DB DB.MySQLConfig `json:"mysql" comment:"数据库配置"`
 }

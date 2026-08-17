@@ -1,13 +1,13 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package main
 
 import (
-	"log"
+	"context"
 	"os"
 
 	"github.com/1303-yzym/MoonshotWell/cmd"
+	"github.com/1303-yzym/MoonshotWell/pkg/infra/logger"
+	"github.com/1303-yzym/MoonshotWell/pkg/signal"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -16,5 +16,20 @@ func main() {
 		os.Exit(0)
 	}
 
-	log.Printf("配置文件：%+v", cmd.Cfg)
+	// 程序退出
+	signal.On(func(ctx context.Context) {
+		log := logger.App()
+		log.Info("stop server...")
+
+		if err := cmd.Adapter.Shutdown(ctx); err != nil {
+			log.Error("shutdown err", zap.Error(err))
+		}
+
+		log.Info("stop server done")
+
+		logger.Log().Sync()
+
+	})
+
+	signal.Listen()
 }

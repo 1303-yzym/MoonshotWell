@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// RunServer 启动http服务
 func RunServer(host string, port int, handler http.Handler, tlsConfig *tls.Config) *http.Server {
 	address := host + ":" + strconv.Itoa(port)
 	srv := initServer(address, handler, tlsConfig)
@@ -33,6 +34,7 @@ func RunServer(host string, port int, handler http.Handler, tlsConfig *tls.Confi
 	return srv
 }
 
+// 自定义HTTP配置
 func initServer(address string, handler http.Handler, tlsConfig *tls.Config) *http.Server {
 	return &http.Server{
 		TLSConfig:      tlsConfig,

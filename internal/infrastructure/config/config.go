@@ -2,11 +2,11 @@ package config
 
 import "github.com/1303-yzym/MoonshotWell/pkg/config"
 
-var cfg = config.New[ConfigInstance]()
+var cfg = config.New[CfgInstance]()
 
-type Config config.Config[ConfigInstance]
+type Config config.Config[CfgInstance]
 
-type ConfigInstance struct {
+type CfgInstance struct {
 	// TODO 定义扩展
 	// Constant Constant `mapstructure:"constant" json:"constant" comment:"常量"`
 }
