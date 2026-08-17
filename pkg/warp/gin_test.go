@@ -3,10 +3,8 @@ package warp
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"testing"
 
-	"github.com/1303-yzym/MoonshotWell/pkg/warp/apipost"
 	"github.com/gin-gonic/gin"
 	"github.com/oklog/ulid/v2"
 )
@@ -89,20 +87,9 @@ func TestGin(t *testing.T) {
 
 	})
 
-	oas, err := apipost.NewApiPost(gwp.RouteInfos())
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err = oas.WriteApiTable(os.Stdout); err != nil {
-		t.Fatal(err)
-	}
-
-	oas.GenApiJsonSchema("./.api", "{{url}}v1")
-
 	srv := gwp.Server("0.0.0.0", "12931", nil)
 
-	if err = srv.ListenAndServe(); err != nil {
+	if err := srv.ListenAndServe(); err != nil {
 		t.Fatal(err)
 	}
 }
