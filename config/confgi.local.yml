@@ -1,5 +1,5 @@
 env:
-  "dev"
+  "prod"
 
 server:
   http:
@@ -7,9 +7,4 @@ server:
       8080
     router_prefix:
       "/"
-
-storage:
-  mysql:
-    port:
-      3306
 

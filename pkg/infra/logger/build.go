@@ -81,7 +81,7 @@ func NewFactory(lv zapcore.Level, opts ...LogOption) *LogFactory {
 	return l
 }
 
-func (l *LogFactory) New(logName string, fls ...zap.Field) *zap.Logger {
+func (l *LogFactory) New(isError bool, runtime *zap.Logger, logName string, fls ...zap.Field) *zap.Logger {
 	var outs []*OutLogger
 	if l.Development {
 		outs = append(outs, &OutLogger{
@@ -96,6 +96,7 @@ func (l *LogFactory) New(logName string, fls ...zap.Field) *zap.Logger {
 
 		outs = append(outs, &OutLogger{
 			Encoder: productionEncoder(),
+			// lumberjack能够实现日志的自动轮转，将不同名称的日志输出到不同的日志文件中
 			Writer: &lumberjack.Logger{
 				Filename:   filepath.Join(l.LogDir, logName),
 				LocalTime:  l.logSliceConfig.LocalTime,
@@ -108,7 +109,12 @@ func (l *LogFactory) New(logName string, fls ...zap.Field) *zap.Logger {
 		})
 	}
 
-	log := newLog(outs...)
+	var log *zap.Logger
+	if isError {
+		log = newErrorLog(l.Development, runtime, outs...)
+	} else {
+		log = newLog(runtime, outs...)
+	}
 
 	return log.With(fls...)
 }
@@ -122,7 +128,7 @@ func (l *LogFactory) Basic() *zap.Logger {
 		encoder = productionEncoder()
 	}
 
-	return newLog(&OutLogger{
+	return newLog(nil, &OutLogger{
 		Encoder:      encoder,
 		Writer:       os.Stdout,
 		LevelEnabler: l.Level,
@@ -135,16 +141,45 @@ type OutLogger struct {
 	LevelEnabler zapcore.Level
 }
 
-func newLog(writers ...*OutLogger) *zap.Logger {
+func newLog(runtime *zap.Logger, writers ...*OutLogger) *zap.Logger {
 	if len(writers) < 1 {
 		return nil
 	}
 
 	var logger *zap.Logger
 
-	z := zap.NewProductionEncoderConfig()
-	z.EncodeTime = zapcore.ISO8601TimeEncoder
+	//z := zap.NewProductionEncoderConfig()
+	//z.EncodeTime = zapcore.ISO8601TimeEncoder
+	core := newLogCore(runtime, writers...)
 
+	logger = zap.New(core, zap.AddCaller())
+	_ = logger.Sync()
+
+	return logger
+}
+
+func newErrorLog(isDev bool, runtime *zap.Logger, writers ...*OutLogger) *zap.Logger {
+	if len(writers) < 1 {
+		return nil
+	}
+
+	var logger *zap.Logger
+
+	core := newLogCore(runtime, writers...)
+	var opt zap.Option
+
+	if isDev {
+		opt = zap.AddStacktrace(zap.WarnLevel)
+	} else {
+		opt = zap.AddStacktrace(zap.ErrorLevel)
+	}
+
+	logger = zap.New(core, zap.AddCaller(), opt)
+
+	return logger
+}
+
+func newLogCore(runtime *zap.Logger, writers ...*OutLogger) zapcore.Core {
 	var core zapcore.Core
 	if len(writers) == 1 {
 		core = zapcore.NewCore(writers[0].Encoder,
@@ -158,11 +193,11 @@ func newLog(writers ...*OutLogger) *zap.Logger {
 
 		core = zapcore.NewTee(cores...)
 	}
+	if runtime != nil {
+		core = zapcore.NewTee(core, runtime.Core())
+	}
 
-	logger = zap.New(core, zap.AddCaller())
-	_ = logger.Sync()
-
-	return logger
+	return core
 }
 
 func productionEncoder() zapcore.Encoder {

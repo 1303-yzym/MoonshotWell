@@ -14,11 +14,12 @@ var (
 		}
 
 		return &Logs{
-			Original:  ll,
-			AppLog:    ll,
-			AccessLog: ll,
-			SqlLog:    ll,
-			EventLog:  ll,
+			Original:  ll.Named("original"),    // 原始日志，未经过处理的原始数据
+			AppLog:    ll.Named("application"), // 业务逻辑日志，业务流程、数据变化
+			AccessLog: ll.Named("access"),      // 请求/响应日志，HTTP/RPC调用监控
+			SqlLog:    ll.Named("sql"),         // 数据库日志，SQL执行、慢查询
+			EventLog:  ll.Named("event"),       // 事件驱动日志，包括消息队列、事件的发布/订阅
+			ErrorLog:  ll.Named("error"),       // 错误日志，需要打开错误堆栈的记录
 		}
 	})
 )
@@ -35,6 +36,7 @@ type Logs struct {
 	AccessLog *zap.Logger
 	SqlLog    *zap.Logger
 	EventLog  *zap.Logger
+	ErrorLog  *zap.Logger
 }
 
 func Log() *zap.Logger {
@@ -55,4 +57,8 @@ func SQL() *zap.Logger {
 
 func Event() *zap.Logger {
 	return Logger.Load().EventLog
+}
+
+func Error() *zap.Logger {
+	return Logger.Load().ErrorLog
 }

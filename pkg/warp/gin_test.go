@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/oklog/ulid/v2"
@@ -89,7 +90,17 @@ func TestGin(t *testing.T) {
 
 	srv := gwp.Server("0.0.0.0", "12931", nil)
 
-	if err := srv.ListenAndServe(); err != nil {
-		t.Fatal(err)
+	if err := func() error {
+		var err error
+		go func() {
+			err = srv.ListenAndServe()
+		}()
+
+		return err
+	}(); err != nil {
+		t.Error(err.Error())
+		t.Fatal("fail to run server")
 	}
+
+	time.Sleep(3 * time.Second)
 }

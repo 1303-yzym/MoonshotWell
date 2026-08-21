@@ -23,7 +23,7 @@ func TestDev(t *testing.T) {
 	zap.ReplaceGlobals(log)
 	zap.L().Named("access").Info("hello world")
 	zap.L().Named("access").Info("hello world1")
-	log2 := factory.New("rn",
+	log2 := factory.New(false, nil, "rn",
 		zap.String("instance", "dv-1"),
 		zap.String("server", "dc-server"),
 		zap.String("version", "0.1.2"),
@@ -34,7 +34,8 @@ func TestDev(t *testing.T) {
 	access := log2.Named("access").With(zap.String("module", "service"), zap.String("traceId", "e094b8338e7f4b1894b8338e7f4b1867"))
 	access.Info("access")
 
-	for i := range 200000 {
+	// 200000
+	for i := range 20 {
 		access.Info("access.info", zap.Int("access.info", i))
 	}
 

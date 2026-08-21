@@ -27,8 +27,6 @@ func main() {
 
 		log.Info("stop server done")
 
-		logger.Log().Sync()
-
 	})
 
 	signal.Listen()

@@ -14,9 +14,7 @@ var (
 		Use:   "serve",
 		Short: "Starts the server",
 		Run: func(cmd *cobra.Command, args []string) {
-			// TODO 初始化应用层
 			app = application.InitApplication(appState)
-			// TODO 加载出口适配器
 			Adapter = adapter.LoadAdapter(appState, app)
 		},
 	}
