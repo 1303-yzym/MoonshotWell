@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"fmt"
@@ -7,6 +7,8 @@ import (
 	"github.com/1303-yzym/MoonshotWell/internal/infrastructure/config"
 	"github.com/1303-yzym/MoonshotWell/internal/infrastructure/state"
 	"github.com/1303-yzym/MoonshotWell/pkg/infra"
+	"github.com/1303-yzym/MoonshotWell/pkg/server"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -47,7 +49,11 @@ var (
 	}
 )
 
-func Execute() {
+func execute() {
+	color.HiBlue(fmt.Sprintf("Version: %s ReVision: %s\n", VERSION, REVISION))
+
+	server.PrintWorkingDirAndPID()
+
 	if err := rootCmd.Execute(); err != nil {
 		zap.L().Error("rootCmd.Execute error", zap.Error(err))
 		os.Exit(1)

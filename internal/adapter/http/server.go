@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	gc "github.com/1303-yzym/MoonshotWell/internal/adapter/http/context"
+	"github.com/1303-yzym/MoonshotWell/internal/adapter/http/middleware"
 	"github.com/1303-yzym/MoonshotWell/internal/adapter/http/router"
 	"github.com/1303-yzym/MoonshotWell/internal/application"
 	"github.com/1303-yzym/MoonshotWell/internal/application/service"
@@ -16,6 +17,7 @@ import (
 )
 
 func initHttpSrv(appState *state.AppState, appService *service.Service) http.Handler {
+	// 根据不同的环境初始换不同的gin日志级别
 	switch appState.Cfg.Env {
 	case config.EnvDev:
 		gin.SetMode(gin.DebugMode)
@@ -47,7 +49,7 @@ func initHttpSrv(appState *state.AppState, appService *service.Service) http.Han
 		return gc.New(ctx)
 	}, warp.WithNoRouterInfo(appState.Cfg.IsProd()))
 
-	// gwp.Use(middleware.Logger(appState.Cfg.IsDev()))
+	gwp.Use(middleware.Logger(appState.Cfg.IsDev()))
 
 	rootGroup := gwp.Group(appState.Cfg.Server.HTTP.RouterPrefix)
 

@@ -14,6 +14,7 @@ import (
 )
 
 func InitMySqlDB(log *zap.Logger, cfg SQLConfig) (db *gorm.DB, err error) {
+	// 驱动配置
 	mysqlConfig := mysql.Config{
 		DSN:                       cfg.DSN(),
 		DisableDatetimePrecision:  true,  // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持

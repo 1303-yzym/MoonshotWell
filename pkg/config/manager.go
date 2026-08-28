@@ -56,6 +56,7 @@ func (cm *Manager[E]) init(cfgFilePath string) error {
 	if cfgFilePath != "" {
 		cm.vp.SetConfigFile(cfgFilePath)
 	} else {
+		// 默认配置文件路径 ./config.yaml
 		cm.vp.AddConfigPath(".")
 		cm.vp.SetConfigName("config")
 		cm.vp.SetConfigType("yaml")

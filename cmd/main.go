@@ -4,15 +4,14 @@ import (
 	"context"
 	"os"
 
-	"github.com/1303-yzym/MoonshotWell/cmd"
 	"github.com/1303-yzym/MoonshotWell/pkg/infra/logger"
 	"github.com/1303-yzym/MoonshotWell/pkg/signal"
 	"go.uber.org/zap"
 )
 
 func main() {
-	cmd.Execute()
-	if !cmd.ShouldRun {
+	execute()
+	if !ShouldRun {
 		os.Exit(0)
 	}
 
@@ -21,7 +20,7 @@ func main() {
 		log := logger.App()
 		log.Info("stop server...")
 
-		if err := cmd.Adapter.Shutdown(ctx); err != nil {
+		if err := adapter.Shutdown(ctx); err != nil {
 			log.Error("shutdown err", zap.Error(err))
 		}
 

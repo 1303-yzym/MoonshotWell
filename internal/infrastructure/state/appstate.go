@@ -2,6 +2,8 @@ package state
 
 import (
 	"github.com/1303-yzym/MoonshotWell/internal/infrastructure/config"
+	"github.com/1303-yzym/MoonshotWell/pkg/contract"
+	db "github.com/1303-yzym/MoonshotWell/pkg/infra/DB"
 	"github.com/1303-yzym/MoonshotWell/pkg/infra/logger"
 )
 
@@ -12,7 +14,7 @@ type Version struct {
 
 // AppState 全局句柄
 type AppState struct {
-	//contract.Storage
+	contract.Storage
 	//
 	//Version Version
 	//// rabbitmq
@@ -40,8 +42,13 @@ type AppState struct {
 }
 
 func InitAppState() *AppState {
+	// 初始化数据库
+	log := logger.Logger.Load()
+	cfg := config.Load()
+	DB := db.InitDB(log.SqlLog, cfg.DB)
 	return &AppState{
-		Logs: logger.Logger.Load(),
-		Cfg:  config.Load(),
+		Storage: contract.NewStorage(DB, nil, nil),
+		Logs:    logger.Logger.Load(),
+		Cfg:     config.Load(),
 	}
 }
